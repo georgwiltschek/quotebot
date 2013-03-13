@@ -12,6 +12,9 @@ Commands
 * !quote *<string>* -- take a random quotation from database that contain _string_
 * !quote add <quote> -- save the _quote_ in the database
 
+* !op -- gives op to users from op table
+* !op add <username> -- adds username to op table of calling user is in it
+
 #### Private message commands
 * !join <channel> -- Request to join _channel_ to the bot
 
