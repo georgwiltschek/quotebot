@@ -1,8 +1,0 @@
-{
-	'server'			: 'irc.server.com',
-	'port'				: 6667,
-	'realname'			: 'quotebot'
-	'nick'				: 'quotebot'
-	'default_channel'	: '#quotebottestchannel123'
-	'default_admin'		: 'myircusername'
-}
