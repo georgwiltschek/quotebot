@@ -34,7 +34,7 @@ on :channel, /^!op add (.*?)$/ do |newop|
 		n.channel = channel
 		n.nick = newop
 		n.save
-  		raw ["NOTICE #{nick} :", "#{newop} a added to ops"].join()
+  		raw ["NOTICE #{nick} :", "#{newop} added to ops"].join()
 	end
 end
 
