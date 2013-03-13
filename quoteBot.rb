@@ -1,13 +1,16 @@
 require 'rubygems'
 require 'isaac'
 require 'database'
+require 'yaml'
+
 
 
 configure do |c|
-  c.server		= "irc.server.com"
-  c.port		= 6667
-  c.realname	= "quotebot"
-  c.nick		= "quotebot"
+  config 		= YAML.load_file("config.yml")
+  c.server		= config["config"]["server"]
+  c.port		= config["config"]["port"]
+  c.realname	= config["config"]["realname"]
+  c.nick		= config["config"]["nick"]
 end
 
 on :connect do
