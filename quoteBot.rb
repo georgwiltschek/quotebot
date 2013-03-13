@@ -12,8 +12,9 @@ end
 
 on :connect do
   # take stuff from db
-  join Channel.channels_list unless Channel.all.size==0
-  join "#quotebot_test_channel" if Channel.all.length==0
+  #  join Channel.channels_list unless Channel.all.size==0
+  # join "#tl" if Channel.all.length==0
+  join "#testchannelquotebot123"
 end
 
 # add opp to current channel
@@ -21,19 +22,19 @@ on :channel, /^!op add (.*?)$/ do |newop|
 	# caller must already be op (except first caller, 
 	# which get automatically added to ops)
 	if (!Op.isOp(channel, nick)) then
-		msg channel, "only op can add ops"
+  		raw ["NOTICE #{channel} :", "only ops can do this"].join()
 		return
 	end
 
 	# only add once
 	if (Op.isOp(channel, newop)) then
-		msg channel, "#{newop} is already op"
+  		raw ["NOTICE #{nick} :", "#{newop} is already op"].join()
 	else
 		n = Op.new
 		n.channel = channel
-		n.nick = nick
+		n.nick = newop
 		n.save
-		msg channel, "#{newop} added to ops"
+  		raw ["NOTICE #{nick} :", "#{newop} a added to ops"].join()
 	end
 end
 
@@ -42,7 +43,7 @@ on :channel, /^\!op$/ do
 	if (Op.isOp(channel, nick)) then
 		mode(channel, "op " + nick)
 	else
-		msg channel, "nope"
+  		raw ["NOTICE #{nick} :", "nope"].join()
 	end
 end
 
@@ -50,7 +51,7 @@ end
 on :channel, /^\!quote$/ do
   quote = Quote.random
   if quote.nil?
-    msg channel, "No quotes"
+  	raw ["NOTICE #{channel} :", "No Quotes :("].join()
   else
     msg channel,quote.first.quote
   end
@@ -67,16 +68,16 @@ on :channel, /^!quote add (.*?)$/ do |quoted_message|
   quote.channel=Channel.first_or_create(:channel=>channel)
   quote.save
   if quote.saved?
-    msg channel, "Quote added"
+  	raw ["NOTICE #{channel} :", "Quote added"].join()
   else
-    msg channel, "Quote not added!"
+  	raw ["NOTICE #{channel} :", "Quote not added"].join()
   end
 end
 
 on :channel, /^\!quote (.*?)$/ do |contains|
   quote = Quote.random_with_custom "%#{contains}%"
   if (quote.nil? or quote.empty? )
-    msg channel, "No quotes"
+  	raw ["NOTICE #{channel} :", "No Quotes :("].join()
   else
     msg channel, quote.first.quote
   end
