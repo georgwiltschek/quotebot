@@ -12,12 +12,9 @@ class Quote
   belongs_to  :channel
 
   before :save do
-    self.date=DateTime.new
+    self.date=DateTime.now
   end
 
-  # def self.random
-  #   all.length > 0 ? (get(rand(all.length) + 1) || random) : nil
-  # end
   def self.random
     if all.length>0
       repository.adapter.select "SELECT * FROM quotes ORDER BY RANDOM() LIMIT 1"
@@ -44,8 +41,31 @@ class Channel
   def self.channels_list
     all(:fields=>[channel]).map{|n| n.channel}.join(',')
   end
-
 end
+
+class Op
+  include DataMapper::Resource
+
+  property :id, Serial
+  property :channel, String
+  property :nick, String
+
+  def self.isOp v1, v2
+
+	## add first user who tries to be op
+	if all.length == 0 then
+		first = Op.new
+		first.channel = v1
+		first.nick = v2
+		first.save
+		return true
+	end
+
+	return repository.adapter.select("SELECT * FROM ops where channel = ? and nick = ? ORDER BY RANDOM() LIMIT 1", v1, v2).size() > 0 
+  end
+  
+end
+
 
 DataMapper.finalize
 DataMapper.auto_upgrade!
