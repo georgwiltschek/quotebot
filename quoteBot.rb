@@ -39,7 +39,7 @@ on :channel, /^!smoke (.*?)$/ do |hashtag|
     msg channel, "nichts gefunden :("
     return
   end
-  msg channel,tweet["results"].first["text"]
+  msg channel,tweet["results"].choice["text"]
 end
 
 # add opp to current channel
