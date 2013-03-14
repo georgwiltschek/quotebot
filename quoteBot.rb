@@ -5,6 +5,7 @@ require 'yaml'
 
 $config  = YAML.load_file("config.yml")
 $version = "0.1"
+$githash = `git log -1 --pretty=format:%h | head -c 8`
 $help    = Array.new()
 $helpop  = Array.new()
 
@@ -56,6 +57,8 @@ end
 on :channel, /^\!help$/ do
 
 	if ($help.empty?) then
+		$help.push("!help              -- obvious :p") 
+		$help.push("!version           -- version information") 
 		$help.push("!quote add <quote> -- add quote.") 
 		$help.push("!quote             -- return random quote.") 
 		$help.push("!quote <string>    -- return random quote containing <string>.")
@@ -78,6 +81,9 @@ on :channel, /^\!help$/ do
 	end
 end
 
+on :channel, /^\!version$/ do
+	raw ["NOTICE #{nick} :", "#{$version} (#{$githash})"].join()
+end
 
 # mostly original quote stuff 
 on :channel, /^\!quote$/ do
