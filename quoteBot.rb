@@ -34,7 +34,11 @@ on :channel, /^!smoke (.*?)$/ do |hashtag|
   response = Net::HTTP.get_response("search.twitter.com","/search.json?q="+hashtag)
   
   tweet = JSON.parse(response.body)
-  
+ 
+  if tweet['results'].size == 0 then
+    msg channel, "nichts gefunden :("
+    return
+  end
   msg channel,tweet["results"].first["text"]
 end
 
