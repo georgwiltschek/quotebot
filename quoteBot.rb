@@ -79,6 +79,7 @@ on :channel, /^\!help$/ do
 	if ($help.empty?) then
 		$help.push("!help              -- obvious :p") 
 		$help.push("!version           -- version information") 
+		$help.push("!smoke <string>    -- search twitter for <string>.") 
 		$help.push("!quote add <quote> -- add quote.") 
 		$help.push("!quote             -- return random quote.") 
 		$help.push("!quote <string>    -- return random quote containing <string>.")
