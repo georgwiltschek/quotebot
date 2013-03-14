@@ -3,21 +3,20 @@ require 'isaac'
 require 'database'
 require 'yaml'
 
-
+$config 		= YAML.load_file("config.yml")
 
 configure do |c|
-  config 		= YAML.load_file("config.yml")
-  c.server		= config["config"]["server"]
-  c.port		= config["config"]["port"]
-  c.realname	= config["config"]["realname"]
-  c.nick		= config["config"]["nick"]
+  c.server		= $config["config"]["server"]
+  c.port		= $config["config"]["port"]
+  c.realname	= $config["config"]["realname"]
+  c.nick		= $config["config"]["nick"]
 end
 
 on :connect do
   # take stuff from db
   #  join Channel.channels_list unless Channel.all.size==0
   # join "#tl" if Channel.all.length==0
-  join "#testchannelquotebot123"
+  join $config["config"]["default_channel"] 
 end
 
 # add opp to current channel
