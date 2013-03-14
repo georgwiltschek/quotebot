@@ -3,13 +3,13 @@ require 'isaac'
 require 'database'
 require 'yaml'
 
-$config 		= YAML.load_file("config.yml")
+$config = YAML.load_file("config.yml")
 
 configure do |c|
-  c.server		= $config["config"]["server"]
-  c.port		= $config["config"]["port"]
-  c.realname	= $config["config"]["realname"]
-  c.nick		= $config["config"]["nick"]
+  c.server   = $config["config"]["server"]
+  c.port     = $config["config"]["port"]
+  c.realname = $config["config"]["realname"]
+  c.nick     = $config["config"]["nick"]
 end
 
 on :connect do
