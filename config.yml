@@ -1,7 +1,7 @@
 config:
-  server: irc.beirut.com
+  server: irc.server.com
   port	: 6667
-  realname: pontitest
-  nick	: pontitest
-  default_channel: "#tl_test"
-  default_admin	: "drei0003019"
+  realname: quotebot
+  nick	: quotebot
+  default_channel: "#quotebot_test"
+  default_admin	: myircusername
