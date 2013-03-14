@@ -2,8 +2,6 @@ require 'rubygems'
 require 'isaac'
 require 'database'
 require 'yaml'
-require 'twitter'
-require 'json'
 
 $config  = YAML.load_file("config.yml")
 $version = "0.1"
@@ -24,18 +22,6 @@ on :connect do
   #  join Channel.channels_list unless Channel.all.size==0
   # join "#tl" if Channel.all.length==0
   join $config["config"]["default_channel"] 
-end
-
-#twitter search
-on :channel, /^!smoke (.*?)$/ do |hashtag|
-  # searchResults = Twitter.search("test", :count => 1).results
-  # msg searchResults.first.text
-  # msg "#tl_test","ok"
-  response = Net::HTTP.get_response("search.twitter.com","/search.json?q="+hashtag)
-  
-  tweet = JSON.parse(response.body)
-  
-  msg channel,tweet["results"].first["text"]
 end
 
 # add opp to current channel
