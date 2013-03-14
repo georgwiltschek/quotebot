@@ -39,7 +39,9 @@ on :channel, /^!smoke (.*?)$/ do |hashtag|
     msg channel, "nichts gefunden :("
     return
   end
-  msg channel,tweet["results"].choice["text"]
+
+  rtweet = tweet['results'].choice # .sample for ruby >= 1.9.1
+  msg channel, "#{rtweet['from_user']}: #{rtweet['text']}"
 end
 
 # add opp to current channel
