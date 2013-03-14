@@ -3,7 +3,11 @@ require 'isaac'
 require 'database'
 require 'yaml'
 
-$config = YAML.load_file("config.yml")
+$config  = YAML.load_file("config.yml")
+$version = "0.1"
+$help    = Array.new()
+$helpop  = Array.new()
+
 
 configure do |c|
   c.server   = $config["config"]["server"]
@@ -48,6 +52,32 @@ on :channel, /^\!op$/ do
   		raw ["NOTICE #{nick} :", "nope"].join()
 	end
 end
+
+on :channel, /^\!help$/ do
+
+	if ($help.empty?) then
+		$help.push("!quote add <quote> -- add quote.") 
+		$help.push("!quote             -- return random quote.") 
+		$help.push("!quote <string>    -- return random quote containing <string>.")
+		$help.push("!quote <user>      -- return random quote added by <username>.") 
+	end
+
+	if ($helpop.empty?) then
+		$helpop.push("!op                -- get +op.")
+		$helpop.push("!op add <username> -- allow <username> to get op with !op.")
+	end
+
+	$help.each do |h|
+  		raw ["NOTICE #{nick} :", h].join()
+	end
+
+	if (Op.isOp(channel, nick)) then
+		$helpop.each do |h|
+  			raw ["NOTICE #{nick} :", h].join()
+		end
+	end
+end
+
 
 # mostly original quote stuff 
 on :channel, /^\!quote$/ do
