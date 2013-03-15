@@ -31,8 +31,12 @@ on :channel, /^!smoke (.*?)$/ do |hashtag|
   # searchResults = Twitter.search("test", :count => 1).results
   # msg searchResults.first.text
   # msg "#tl_test","ok"
-  response = Net::HTTP.get_response("search.twitter.com","/search.json?q="+hashtag)
-  
+  response = Net::HTTP.get_response("search.twitter.com","/search.json?q="+hashtag.gsub(" ", "%20"))
+
+  if (response.body == nil) then
+	  return
+  end
+
   tweet = JSON.parse(response.body)
  
   if tweet['results'].size == 0 then
