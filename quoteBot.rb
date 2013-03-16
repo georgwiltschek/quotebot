@@ -66,7 +66,9 @@ end
 
 on :join do
   p $settings
-  if (rand($settings["greetings"]["badChance"]) == 0) then
+  if $settings["greetings"]["goodPeople"].include?(nick) then
+    msg channel, $settings["greetings"]["good"].choice
+  elsif (rand($settings["greetings"]["badChance"]) == 0) then
     msg channel, $settings["greetings"]["bad"].choice
   elsif (rand($settings["greetings"]["goodChance"]) == 0) then
     msg channel, $settings["greetings"]["good"].choice
