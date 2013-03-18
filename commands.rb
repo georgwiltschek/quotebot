@@ -1,3 +1,5 @@
+require 'FourchanBuffer'
+
 class Commands < Array
   
   class Command
@@ -13,6 +15,7 @@ class Commands < Array
     #   puts "nice " + cmd.help
     # end
     # self.push cmd
+    @fcBuffer = FourchanBuffer.new
     
     #w titter search
     cmd = Command.new
@@ -151,6 +154,26 @@ class Commands < Array
     cmd.cmd = Proc.new do
       puts "kicking " + nick
       kick(channel,nick)
+    end
+    self.push cmd
+    
+    # 4chan dare
+    cmd = Command.new
+    cmd.help = "!dare           -- i dare you to klick this link. i double dare you motherfucker!"
+    cmd.regex = /^\!dare/
+    cmd.cmd = Proc.new do
+      
+      board = FourchanBuffer.new.board("b")
+      thread = board.threads.choice
+      posts = Fourchan::Post.new "b", thread.thread
+      post = posts.all.choice
+
+      if post.image then
+        msg channel, post.image
+      else
+        msg channel, post.com
+      end
+      # msg channel, "LOL"
     end
     self.push cmd
     
