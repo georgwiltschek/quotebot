@@ -5,6 +5,15 @@ require 'yaml'
 require 'twitter'
 require 'json'
 
+# Extend Isaac
+module Isaac
+  class Bot
+    def clean(event)
+      @events[event] = nil
+    end
+  end
+end
+
 $config  = YAML.load_file("config.yml")
 $version = "0.2"
 $githash = `git log -1 --pretty=format:%h | head -c 8`
