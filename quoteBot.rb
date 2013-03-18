@@ -4,6 +4,7 @@ require 'database'
 require 'yaml'
 require 'twitter'
 require 'json'
+require 'simple-fourchan'
 
 # Extend Isaac
 module Isaac
@@ -30,7 +31,7 @@ configure do |c|
   c.nick     = $config["config"]["nick"]
 end
 
-on :private, /^!reload/ do
+def loadConfigs
   $settings = YAML.load_file("settings.yml")
   load 'commands.rb'
   @commands = Commands.new
@@ -42,10 +43,15 @@ on :private, /^!reload/ do
   end
 end
 
+on :private, /^!reload/ do
+  loadConfigs
+end
+
 on :connect do
   # take stuff from db
   #  join Channel.channels_list unless Channel.all.size==0
   # join "#tl" if Channel.all.length==0
+  loadConfigs
   join $config["config"]["default_channel"] 
 end
 
