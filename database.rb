@@ -1,6 +1,13 @@
 require 'rubygems'
+require 'shellwords'
 %w|core aggregates migrations|.map{|x| require "dm-#{x}"}
-DataMapper.setup(:default, "sqlite:///#{Dir.pwd}/quotes.sqlite3")
+require 'users'
+
+database = "sqlite://#{Dir.pwd}/bible.sqlite3"
+database = Shellwords.escape database
+
+DataMapper.setup(:default, database)
+puts "Database: #{database}"
 
 class Quote
   include DataMapper::Resource
@@ -43,31 +50,10 @@ class Channel
   end
 end
 
-class Op
-  include DataMapper::Resource
 
-  property :id, Serial
-  property :channel, String
-  property :nick, String
-
-  def self.isOp v1, v2
-
-	## add first user who tries to be op
-	if all.length == 0 then
-		first = Op.new
-		first.channel = v1
-		first.nick = v2
-		first.save
-		return true
-	end
-
-	return repository.adapter.select("SELECT * FROM ops where channel = ? and nick = ? ORDER BY RANDOM() LIMIT 1", v1, v2).size() > 0 
-  end
-  
-end
 
 
 DataMapper.finalize
 DataMapper.auto_upgrade!
-DataMapper.auto_migrate! unless File.exists?(File.join(Dir.pwd,"quotes.sqlite3"))
+DataMapper.auto_migrate! unless File.exists?(File.join(Dir.pwd,"bible.sqlite3"))
 DataMapper::Logger.new("logs/queries.txt", :debug)

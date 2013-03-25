@@ -9,8 +9,24 @@ require 'simple-fourchan'
 # Extend Isaac
 module Isaac
   class Bot
+    attr_accessor :params
+    
     def clean(event)
       @events[event] = nil
+    end
+    
+    # we need this patch for the params to track nick changes
+    def dispatch(event, msg=nil)
+      if msg
+        @nick, @user, @host, @channel, @error, @message, @params = 
+          msg.nick, msg.user, msg.host, msg.channel, msg.error, msg.message, msg.params
+      end
+
+      if handler = find(event, message)
+        regexp, block = *handler
+        self.match = message.match(regexp).captures
+        invoke block
+      end
     end
   end
 end
@@ -79,7 +95,19 @@ on :private, /^\!help$/ do
   # end
 end
 
+on :private, /^!register (.*?)$/ do |password|
+  op = Op.create(:nick=>nick, :password=>password)
+  op.save
+  
+  Op.activate(nick,password)
+end
+
 on :join do
+  # adding active user
+  UserManager.add_active_user nick,channel
+  puts "active users"
+  p UserManager.active_users
+  
   p $settings
   if $settings["greetings"]["goodPeople"].include?(nick) then
     msg channel, $settings["greetings"]["good"].choice
@@ -88,6 +116,11 @@ on :join do
   elsif (rand($settings["greetings"]["goodChance"]) == 0) then
     msg channel, $settings["greetings"]["good"].choice
   end
+end
+
+on :nick do
+  puts "woah " + nick + " became " + params[0]
+  UserManager.rename_user nick, params[0]
 end
 
 on :kick do
