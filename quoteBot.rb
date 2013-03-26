@@ -1,4 +1,7 @@
 require 'rubygems'
+require 'nokogiri'
+require 'net/http'
+require 'open-uri'
 require 'isaac'
 require 'database'
 require 'yaml'
@@ -26,7 +29,27 @@ on :connect do
   join $config["config"]["default_channel"] 
 end
 
-#twitter search
+# random wiki
+on :channel, /^!funfact$/ do
+	tries = 0
+	finished = false
+	while tries < 10 && !finished do
+		tries += 1
+		randlang = ["de", "en"].choice
+		url = "http://#{randlang}.wikipedia.org/wiki/Special:Random"
+		doc = Nokogiri::HTML(open(url, 'User-Agent' => 'ruby'))
+		ret = doc.css('div.mw-content-ltr').css('p').text.gsub(/\[.+?\]/, "").split(".").shuffle!
+		ret.each do |r|
+			if r.split(" ").length > 7 then
+    			msg channel, "#{r}."
+				finished = true
+				break	
+			end
+		end
+	end
+end
+
+# twitter search
 on :channel, /^!smoke (.*?)$/ do |hashtag|
   # searchResults = Twitter.search("test", :count => 1).results
   # msg searchResults.first.text
