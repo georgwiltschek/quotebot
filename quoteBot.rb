@@ -38,7 +38,7 @@ on :channel, /^!funfact$/ do
 		randlang = ["de", "en"].choice
 		url = "http://#{randlang}.wikipedia.org/wiki/Special:Random"
 		doc = Nokogiri::HTML(open(url, 'User-Agent' => 'ruby'))
-		ret = doc.css('div.mw-content-ltr').css('p').text.gsub(/\[.+?\]/, "").split(".").shuffle!
+		ret = doc.css('div.mw-content-ltr').css('p').text.gsub(/\[.+?\]/, "").split(/(?:\.|\?|\!)(?= [^a-z]|$)/).shuffle!
 		ret.each do |r|
 			if r.split(" ").length > 7 then
     			msg channel, "#{r}."
