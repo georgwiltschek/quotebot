@@ -31,21 +31,37 @@ end
 
 # random wiki
 on :channel, /^!funfact$/ do
-	tries = 0
-	finished = false
-	while tries < 10 && !finished do
-		tries += 1
+	tries	  = 0
+	finished  = false
+	min_words = 7 
+	max_tries = 10
+
+	# try up to max_tries random pages
+	while tries < max_tries && !finished do
 		randlang = ["de", "en"].choice
 		url = "http://#{randlang}.wikipedia.org/wiki/Special:Random"
+		
+		# get random wikipedia page
 		doc = Nokogiri::HTML(open(url, 'User-Agent' => 'ruby'))
-		ret = doc.css('div.mw-content-ltr').css('p').text.gsub(/\[.+?\]/, "").split(/(?:\.|\?|\!)(?= [^a-z]|$)/).shuffle!
+		
+		# find all paragraphs of main text, remove citation numbers
+		# split into sentences (kind of) and shuffle the array of
+		# sentences
+		ret = doc.css('div.mw-content-ltr').css('p').text
+		ret = ret.gsub(/\[.+?\]/, "").split(/(?:\.|\?|\!)(?= [^a-z]|$)/)
+		ret.map!(&:lstrip)
+		ret.shuffle!
+
+		# find a sentence that's long enough and finish
 		ret.each do |r|
-			if r.split(" ").length > 7 then
+			if r.split(" ").length > min_words then
     			msg channel, "#{r}."
 				finished = true
 				break	
 			end
 		end
+		
+		tries += 1
 	end
 end
 
