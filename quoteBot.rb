@@ -14,8 +14,6 @@ $githash = `git log -1 --pretty=format:%h | head -c 8`
 $help    = Array.new()
 $helpop  = Array.new()
 
-$simple_commands = YAML.load_file("simplecommands.yml")
-
 configure do |c|
   c.server   = $config["config"]["server"]
   c.port     = $config["config"]["port"]
