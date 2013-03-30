@@ -103,6 +103,7 @@ on :channel, /^!smoke (.*?)$/ do |hashtag|
   # searchResults = Twitter.search("test", :count => 1).results
   # msg searchResults.first.text
   # msg "#tl_test","ok"
+  hashtag = URI::encode(hashtag)
   response = Net::HTTP.get_response("search.twitter.com","/search.json?q="+hashtag.gsub(" ", "%20"))
 
   if (response.body == nil) then
@@ -110,7 +111,11 @@ on :channel, /^!smoke (.*?)$/ do |hashtag|
   end
 
   tweet = JSON.parse(response.body)
- 
+
+  if tweet['error']
+	return
+  end
+
   if tweet['results'].size == 0 then
     msg channel, "nichts gefunden :("
     return
