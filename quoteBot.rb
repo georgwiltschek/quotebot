@@ -14,8 +14,6 @@ $githash = `git log -1 --pretty=format:%h | head -c 8`
 $help    = Array.new()
 $helpop  = Array.new()
 
-$simple_commands = YAML.load_file("simplecommands.yml")
-
 configure do |c|
   c.server   = $config["config"]["server"]
   c.port     = $config["config"]["port"]
@@ -28,6 +26,22 @@ on :connect do
   #  join Channel.channels_list unless Channel.all.size==0
   # join "#tl" if Channel.all.length==0
   join $config["config"]["default_channel"] 
+end
+
+
+# randomised erowid
+on :channel, /^!trip$/ do
+	base_url = "http://www.erowid.org"
+	url = "#{base_url}/general/big_chart.shtml"
+
+	doc = Nokogiri::HTML(open(url, 'User-Agent' => 'ruby'))
+	links =  doc.css('td.subname a').map { |link| link['href'] }
+
+	url = "#{base_url}#{links.choice}"
+
+	doc = Nokogiri::HTML(open(url, 'User-Agent' => 'ruby'))
+	desc = doc.css('div.sum-description').text
+	msg channel, "#{desc} [#{url}]"
 end
 
 # decision helper
