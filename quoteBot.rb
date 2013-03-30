@@ -14,6 +14,7 @@ $githash = `git log -1 --pretty=format:%h | head -c 8`
 $help    = Array.new()
 $helpop  = Array.new()
 
+$simple_commands = YAML.load_file("simplecommands.yml")
 
 configure do |c|
   c.server   = $config["config"]["server"]
@@ -201,5 +202,13 @@ on :channel, /^\!quote (.*?)$/ do |contains|
   else
     msg channel, quote.first.quote
   end
+end
+
+# if the command was not found before, maybe it's defined
+# in the config file
+on :channel, /^!(.*?)$/ do | c |
+	if (ret = $config["commands"][c]) != nil
+		msg channel, "#{ret}"
+	end
 end
 
