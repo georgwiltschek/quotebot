@@ -5,3 +5,7 @@ config:
   nick	: quotebot
   default_channel: "#quotebot_test"
   default_admin	: myircusername
+
+commands:
+  test: "look there http://example.com"
+  another test: "hello world"
