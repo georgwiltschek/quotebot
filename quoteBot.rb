@@ -165,6 +165,13 @@ on :channel, /^\!help$/ do
 		$help.push("!quote             -- return random quote.") 
 		$help.push("!quote <string>    -- return random quote containing <string>.")
 		$help.push("!quote <user>      -- return random quote added by <username>.") 
+		$help.push("!funfact           -- random wikipedia snippet") 
+		$help.push("!trip              -- random erowid snippet") 
+		$help.push("!? <string>        -- decision helper") 
+		$help.push("!8 <string>        -- magic 8 ball")
+		$help.push("!habemus           -- ")
+		$help.push("!ping              -- ")
+
 	end
 
 	if ($helpop.empty?) then
