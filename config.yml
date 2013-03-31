@@ -1,9 +1,9 @@
 config:
-  server: irc.server.com
+  server: irc.beirut.com
   port	: 6667
   realname: quotebot
-  nick	: quotebot
-  default_channel: "#quotebot_test"
+  nick	: child
+  default_channel: "#tl_test"
   default_admin	: myircusername
 
 commands:

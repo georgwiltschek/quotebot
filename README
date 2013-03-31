@@ -37,3 +37,6 @@ License
     under the License.
 
 http://www.alexreisner.com/code/upstart
+
+
+gem install twitter simple-fourchan dm-core dm-aggregates dm-migrations dm-sqlite-adapter timers json yaml isaac nokogiri
