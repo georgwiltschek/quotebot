@@ -7,12 +7,25 @@ require 'database'
 require 'yaml'
 require 'twitter'
 require 'json'
+require 'simple-fourchan'
+
+# Extend Isaac
+module Isaac
+  class Bot
+    def clean(event)
+      @events[event] = nil
+    end
+  end
+end
 
 $config  = YAML.load_file("config.yml")
-$version = "0.1"
+$version = "0.2"
 $githash = `git log -1 --pretty=format:%h | head -c 8`
-$help    = Array.new()
-$helpop  = Array.new()
+# $help    = Array.new()
+# $helpop  = Array.new()
+
+# this settings will get reloaded
+$settings = YAML.load_file("settings.yml")
 
 configure do |c|
   c.server   = $config["config"]["server"]
@@ -20,6 +33,18 @@ configure do |c|
   c.realname = $config["config"]["realname"]
   c.nick     = $config["config"]["nick"]
 end
+
+def loadConfigs
+  $settings = YAML.load_file("settings.yml")
+  load 'commands.rb'
+  @commands = Commands.new
+  
+  clean :channel
+  @commands.each do |command|
+    p command
+    on :channel, command.regex, &command.cmd
+  end
+
 
 on :connect do
   # take stuff from db
@@ -111,51 +136,36 @@ on :channel, /^!smoke (.*?)$/ do |hashtag|
   end
 
   tweet = JSON.parse(response.body)
-
-  if tweet['error']
-	return
-  end
-
+ 
   if tweet['results'].size == 0 then
     msg channel, "nichts gefunden :("
     return
   end
 
-  rtweet = tweet['results'].choice # .sample for ruby >= 1.9.1
-  msg channel, "#{rtweet['from_user']}: #{rtweet['text']}"
+on :private, /^!reload/ do
+  loadConfigs
 end
 
-# add opp to current channel
-on :channel, /^!op add (.*?)$/ do |newop|
-	# caller must already be op (except first caller, 
-	# which get automatically added to ops)
-	if (!Op.isOp(channel, nick)) then
-  		raw ["NOTICE #{channel} :", "only ops can do this"].join()
-		return
-	end
-
-	# only add once
-	if (Op.isOp(channel, newop)) then
-  		raw ["NOTICE #{nick} :", "#{newop} is already op"].join()
-	else
-		n = Op.new
-		n.channel = channel
-		n.nick = newop
-		n.save
-  		raw ["NOTICE #{nick} :", "#{newop} added to ops"].join()
-	end
+on :connect do
+  # take stuff from db
+  #  join Channel.channels_list unless Channel.all.size==0
+  # join "#tl" if Channel.all.length==0
+  loadConfigs
+  join $config["config"]["default_channel"] 
 end
 
-# request op from bot
-on :channel, /^\!op$/ do
-	if (Op.isOp(channel, nick)) then
-		mode(channel, "op " + nick)
-	else
-  		raw ["NOTICE #{nick} :", "nope"].join()
-	end
-end
+# private for the moment...
+on :private, /^\!help$/ do
 
-on :channel, /^\!help$/ do
+  help = []
+  @commands.each do |command|
+    help.push command.help
+  end
+
+  # if ($helpop.empty?) then
+  #   $helpop.push("!op                -- get +op.")
+  #   $helpop.push("!op add <username> -- allow <username> to get op with !op.")
+  # end
 
 	if ($help.empty?) then
 		$help.push("!help              -- obvious :p") 
@@ -183,24 +193,21 @@ on :channel, /^\!help$/ do
   		raw ["NOTICE #{nick} :", h].join()
 	end
 
-	if (Op.isOp(channel, nick)) then
-		$helpop.each do |h|
-  			raw ["NOTICE #{nick} :", h].join()
-		end
-	end
+  # if (Op.isOp(channel, nick)) then
+  #   $helpop.each do |h|
+  #         raw ["NOTICE #{nick} :", h].join()
+  #   end
+  # end
 end
 
-on :channel, /^\!version$/ do
-	raw ["NOTICE #{nick} :", "#{$version} (#{$githash})"].join()
-end
-
-# mostly original quote stuff 
-on :channel, /^\!quote$/ do
-  quote = Quote.random
-  if quote.nil?
-  	raw ["NOTICE #{channel} :", "No Quotes :("].join()
-  else
-    msg channel,quote.first.quote
+on :join do
+  p $settings
+  if $settings["greetings"]["goodPeople"].include?(nick) then
+    msg channel, $settings["greetings"]["good"].choice
+  elsif (rand($settings["greetings"]["badChance"]) == 0) then
+    msg channel, $settings["greetings"]["bad"].choice
+  elsif (rand($settings["greetings"]["goodChance"]) == 0) then
+    msg channel, $settings["greetings"]["good"].choice
   end
 end
 
