@@ -158,24 +158,26 @@ class Commands < Array
     self.push cmd
     
     # 4chan dare
-    cmd = Command.new
-    cmd.help = "!dare           -- i dare you to klick this link. i double dare you motherfucker!"
-    cmd.regex = /^\!dare/
-    cmd.cmd = Proc.new do
-      
-      board = FourchanBuffer.new.board("b")
-      thread = board.threads.choice
-      posts = Fourchan::Post.new "b", thread.thread
-      post = posts.all.choice
-
-      if post.image then
-        msg channel, post.image
-      else
-        msg channel, post.com
-      end
-      # msg channel, "LOL"
-    end
-    self.push cmd
+    # Disabled until improved
+    #
+    # cmd = Command.new 
+    # cmd.help = "!dare           -- i dare you to klick this link. i double dare you motherfucker!"
+    # cmd.regex = /^\!dare/
+    # cmd.cmd = Proc.new do
+    #   
+    #   board = FourchanBuffer.new.board("b")
+    #   thread = board.threads.choice
+    #   posts = Fourchan::Post.new "b", thread.thread
+    #   post = posts.all.choice
+    # 
+    #   if post.image then
+    #     msg channel, post.image
+    #   else
+    #     msg channel, post.com
+    #   end
+    #   # msg channel, "LOL"
+    # end
+    # self.push cmd
     
     # testing
     cmd = Command.new
