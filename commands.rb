@@ -22,6 +22,7 @@ class Commands < Array
     cmd.help = "!smoke <string>           -- posts a random tweet about <string>"
     cmd.regex = /^\!smoke (.*?)$/
     cmd.cmd = Proc.new do |hashtag|
+      hashtag = URI::encode(hashtag)
       response = Net::HTTP.get_response("search.twitter.com","/search.json?q="+hashtag.gsub(" ", "%20"))
 
       if (response.body == nil) then
@@ -29,7 +30,10 @@ class Commands < Array
       end
 
       tweet = JSON.parse(response.body)
- 
+      if tweet['error']
+      	return
+      end
+        
       if tweet['results'].size == 0 then
         msg channel, "nichts gefunden :("
         return
