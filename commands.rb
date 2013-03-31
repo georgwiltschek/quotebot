@@ -1,4 +1,4 @@
-require 'FourchanBuffer'
+# require 'FourchanBuffer'
 
 class Commands < Array
   
@@ -15,7 +15,7 @@ class Commands < Array
     #   puts "nice " + cmd.help
     # end
     # self.push cmd
-    @fcBuffer = FourchanBuffer.new
+    # @fcBuffer = FourchanBuffer.new
     
     #w titter search
     cmd = Command.new
@@ -178,6 +178,102 @@ class Commands < Array
     #   # msg channel, "LOL"
     # end
     # self.push cmd
+    
+    # randomised erowid
+    cmd = Command.new
+    cmd.help = "!trip              -- random erowid snippet"
+    cmd.regex = /^!trip$/
+    cmd.cmd = Proc.new do
+    	base_url = "http://www.erowid.org"
+    	url = "#{base_url}/general/big_chart.shtml"
+
+    	doc = Nokogiri::HTML(open(url, 'User-Agent' => 'ruby'))
+    	links =  doc.css('td.subname a').map { |link| link['href'] }
+
+    	url = "#{base_url}#{links.choice}"
+
+    	doc = Nokogiri::HTML(open(url, 'User-Agent' => 'ruby'))
+    	desc = doc.css('div.sum-description').text
+    	msg channel, "#{desc} [#{url}]"
+    end
+    self.push cmd
+    
+    # decision helper
+    cmd = Command.new
+    cmd.help = "!? <string>        -- decision helper"
+    cmd.regex = /^!\? (.*?)$/
+    cmd.cmd = Proc.new do |q|
+    	q.gsub!("oder","")
+    	q.gsub!(","," ")
+    	q.gsub("  ", " ")
+
+    	msg channel, "#{q.split(" ").choice}"
+    end
+    self.push cmd
+    
+    # magic 8-ball
+    cmd = Command.new
+    cmd.help = "!8 <string>        -- magic 8 ball"
+    cmd.regex = /^!8 (.*?)$/
+    cmd.cmd = Proc.new do |q|
+    	# ignore q :p
+    	answers = ["It is certain","It is decidedly so","Without a doubt","Yes – definitely","You may rely on it","As I see it, yes","Most likely","Outlook good","Yes","Signs point to yes","Reply hazy, try again","Ask again later","Better not tell you now","Cannot predict now","Concentrate and ask again","Don't count on it","My reply is no","My sources say no","Outlook not so good","Very doubtful"]
+
+    	msg channel, "#{answers.choice}."
+    end
+    self.push cmd
+    
+    # random wiki
+    cmd = Command.new
+    cmd.help = "!funfact           -- random wikipedia snippet"
+    cmd.regex = /^!funfact$/
+    cmd.cmd = Proc.new do
+    	tries	  = 0
+    	finished  = false
+    	min_words = 7 
+    	max_tries = 10
+
+    	# try up to max_tries random pages
+    	while tries < max_tries && !finished do
+    		randlang = ["de", "en"].choice
+    		url = "http://#{randlang}.wikipedia.org/wiki/Special:Random"
+		
+    		# get random wikipedia page
+    		doc = Nokogiri::HTML(open(url, 'User-Agent' => 'ruby'))
+		
+    		# find all paragraphs of main text, remove citation numbers
+    		# split into sentences (kind of) and shuffle the array of
+    		# sentences
+    		ret = doc.css('div.mw-content-ltr').css('p').text
+    		ret = ret.gsub(/\[.+?\]/, "").split(/(?:\.|\?|\!)(?= [^a-z]|$)/)
+    		ret.map!(&:lstrip)
+    		ret.shuffle!
+
+    		# find a sentence that's long enough and finish
+    		ret.each do |r|
+    			if r.split(" ").length > min_words then
+        			msg channel, "#{r}."
+    				finished = true
+    				break	
+    			end
+    		end
+		
+    		tries += 1
+    	end
+    end
+    self.push cmd
+    
+    # if the command was not found before, maybe it's defined
+    # in the config file
+    cmd = Command.new
+    cmd.help = "---"
+    cmd.regex = /^!(.*?)$/
+    cmd.cmd = Proc.new do |c|
+    	if (ret = $config["commands"][c]) != nil
+    		msg channel, "#{ret}"
+    	end
+    end
+    self.push cmd
     
     # testing
     cmd = Command.new
