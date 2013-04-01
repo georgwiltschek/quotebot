@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'simple-fourchan'
-require 'timers'
 
 class FourchanBuffer
     
