@@ -1,4 +1,5 @@
 require 'FourchanBuffer'
+require "shorturl"
 
 class Commands < Array
   
@@ -15,7 +16,7 @@ class Commands < Array
     #   puts "nice " + cmd.help
     # end
     # self.push cmd
-    @fcBuffer = FourchanBuffer.new
+    $fcBuffer = FourchanBuffer.new
     
     #w titter search
     cmd = Command.new
@@ -165,25 +166,59 @@ class Commands < Array
     # Disabled until improved
     #
     cmd = Command.new 
-    cmd.help = "!dare           -- i dare you to klick this link. i double dare you motherfucker!"
+    cmd.help = "!dare           -- i dare you to click this link. i double dare you motherfucker!"
     cmd.regex = /^\!dare/
     cmd.cmd = Proc.new do
       
-      board = FourchanBuffer.new.board("b")
-      thread = board.threads.choice
-      posts = Fourchan::Post.new "b", thread.thread
+      if $fcBuffer.needs_update("b") then
+        msg channel, "one moment..."
+      end
+      posts = $fcBuffer.thread("b")
       
       while post = posts.all.choice do
         posts.all.delete(post)
-    
+          
         if post.image then
           msg channel, post.image
-          break
+          return
         end
-        # msg channel, "LOL"
       end
+      msg channel, "can't find shit :("
+      
     end
     self.push cmd
+    
+    cmd = Command.new 
+    cmd.help = "!50/50          -- feeling lucky?"
+    cmd.regex = /^\!50\/50/
+    cmd.cmd = Proc.new do
+      
+      # we will prefetch both so the loading time won't reveal the coinflip
+      if $fcBuffer.needs_update("b") || $fcBuffer.needs_update("s") then
+        msg channel, "this might take a while..."
+      end
+      posts = $fcBuffer.thread("b")
+      posts = $fcBuffer.thread("s")
+      
+      if rand(2) == 0 then
+        posts = $fcBuffer.thread("b")
+      else
+        posts = $fcBuffer.thread("s")
+      end
+      
+      while post = posts.all.choice do
+        posts.all.delete(post)
+          
+        if post.image then
+          msg channel, ShortURL.shorten(post.image, :tinyurl)
+          return
+        end
+      end
+      msg channel, "can't find shit :("
+      
+    end
+    self.push cmd
+    
     
     # randomised erowid
     cmd = Command.new
