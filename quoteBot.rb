@@ -46,6 +46,14 @@ def loadConfigs
   end
 end
 
+on :connect do
+  # take stuff from db
+  #  join Channel.channels_list unless Channel.all.size==0
+  # join "#tl" if Channel.all.length==0
+  loadConfigs
+  join $config["config"]["default_channel"] 
+end
+
 on :private, /^!reload/ do
   loadConfigs
 end
@@ -55,10 +63,7 @@ on :connect do
   #  join Channel.channels_list unless Channel.all.size==0
   # join "#tl" if Channel.all.length==0
   loadConfigs
-  join $config["config"]["default_channel"]
-  pw = $config["config"]["nickserv_password"]
- 
-  raw "PRIVMSG nickserv :identify #{pw}"
+  join $config["config"]["default_channel"] 
 end
 
 # private for the moment...
