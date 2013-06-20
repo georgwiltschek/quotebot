@@ -19,6 +19,7 @@ module Isaac
 end
 
 $config  = YAML.load_file("config.yml")
+$twitter_config  = YAML.load_file("twitter.yml")
 $version = "0.3"
 $githash = `git log -1 --pretty=format:%h | head -c 8`
 # $help    = Array.new()
@@ -32,6 +33,13 @@ configure do |c|
   c.port     = $config["config"]["port"]
   c.realname = $config["config"]["realname"]
   c.nick     = $config["config"]["nick"]
+end
+
+Twitter.configure do |config|
+  	config.consumer_key = $twitter_config["config"]["consumer_key"]
+  	config.consumer_secret = $twitter_config["config"]["consumer_secret"]
+#  config.oauth_token = YOUR_OAUTH_TOKEN
+#  config.oauth_token_secret = YOUR_OAUTH_TOKEN_SECRET
 end
 
 def loadConfigs

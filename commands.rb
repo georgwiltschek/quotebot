@@ -23,24 +23,17 @@ class Commands < Array
     cmd.help = "!smoke <string>           -- posts a random tweet about <string>"
     cmd.regex = /^\!smoke (.*?)$/
     cmd.cmd = Proc.new do |hashtag|
-      hashtag = URI::encode(hashtag)
-      response = Net::HTTP.get_response("search.twitter.com","/search.json?q="+hashtag.gsub(" ", "%20"))
+    hashtag = URI::encode(hashtag)
+    hashtag = hashtag.gsub(" ", "%20")
+	
+	response = Twitter.search(hashtag, :count => 15).results
 
-      if (response.body == nil) then
-    	  return
-      end
-
-      tweet = JSON.parse(response.body)
-      if tweet['error']
-      	return
-      end
-        
-      if tweet['results'].size == 0 then
+	if(response.length == 0)
         msg channel, "nichts gefunden :("
-        return
-      end
-
-      rtweet = tweet['results'].choice # .sample for ruby >= 1.9.1
+		return
+	end
+        
+      rtweet = response.choice # .sample for ruby >= 1.9.1
       msg channel, "#{rtweet['from_user']}: #{rtweet['text']}"
     end
     self.push cmd

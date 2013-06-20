@@ -26,3 +26,9 @@ config:
 
 commands:
   ping: "pong"
+
+twitter.yml:
+
+config:
+  consumer_key: "consumerkey"
+  consumer_secret: "consumer_secret"
