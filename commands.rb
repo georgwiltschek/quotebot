@@ -1,5 +1,6 @@
 require 'FourchanBuffer'
 require "shorturl"
+require "open-uri"
 
 class Commands < Array
   
@@ -26,7 +27,7 @@ class Commands < Array
       q = URI::encode(q)
       q = q.gsub(" ", "%20")
       url = "http://bibel-online.net/suche/?qs=#{q}&translation=6"
-      doc = Nokogiri::HTML(open(url))
+      doc = Nokogiri::HTML(open(url, "User-Agent" => "Mozilla/5.0 (Windows NT 6.0; rv:12.0) Gecko/20100101 Firefox/12.0 FirePHP/0.7.1" ))
       quotes =  doc.css('p').to_a
 
       if(quotes.length == 0)

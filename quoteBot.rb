@@ -19,10 +19,7 @@ module Isaac
 end
 
 $config  = YAML.load_file("config.yml")
-<<<<<<< HEAD
-=======
 $twitter_config  = YAML.load_file("twitter.yml")
->>>>>>> a54c101be78de57caaf98393ffe824401fcdbb0b
 $version = "0.3"
 $githash = `git log -1 --pretty=format:%h | head -c 8`
 # $help    = Array.new()
@@ -38,8 +35,6 @@ configure do |c|
   c.nick     = $config["config"]["nick"]
 end
 
-<<<<<<< HEAD
-=======
 Twitter.configure do |config|
   	config.consumer_key = $twitter_config["config"]["consumer_key"]
   	config.consumer_secret = $twitter_config["config"]["consumer_secret"]
@@ -47,7 +42,6 @@ Twitter.configure do |config|
 #  config.oauth_token_secret = YOUR_OAUTH_TOKEN_SECRET
 end
 
->>>>>>> a54c101be78de57caaf98393ffe824401fcdbb0b
 def loadConfigs
   $settings = YAML.load_file("settings.yml")
   load 'commands.rb'
@@ -58,22 +52,6 @@ def loadConfigs
     p command
     on :channel, command.regex, &command.cmd
   end
-<<<<<<< HEAD
-=======
-end
-
-on :private, /^!reload/ do
-  loadConfigs
->>>>>>> a54c101be78de57caaf98393ffe824401fcdbb0b
-end
-
-on :connect do
-  # take stuff from db
-  #  join Channel.channels_list unless Channel.all.size==0
-  # join "#tl" if Channel.all.length==0
-  loadConfigs
-<<<<<<< HEAD
-  join $config["config"]["default_channel"] 
 end
 
 on :private, /^!reload/ do
@@ -85,18 +63,6 @@ on :connect do
   #  join Channel.channels_list unless Channel.all.size==0
   # join "#tl" if Channel.all.length==0
   loadConfigs
-  join $config["config"]["default_channel"] 
-end
-
-# private for the moment...
-on :private, /^\!help$/ do
-
-  help = []
-  @commands.each do |command|
-    help.push command.help
-  end
-
-=======
   join $config["config"]["default_channel"]
   pw = $config["config"]["nickserv_password"]
  
@@ -111,7 +77,6 @@ on :private, /^\!help$/ do
     help.push command.help
   end
 
->>>>>>> a54c101be78de57caaf98393ffe824401fcdbb0b
   # if ($help.empty?) then
   #   $help.push("!help              -- obvious :p") 
   #   $help.push("!version           -- version information") 
