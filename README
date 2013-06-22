@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Simple quote bot with isaac
 ===========================
 
@@ -40,3 +41,39 @@ http://www.alexreisner.com/code/upstart
 
 
 gem install twitter simple-fourchan dm-core dm-aggregates dm-migrations dm-sqlite-adapter timers json yaml isaac nokogiri
+=======
+gem install twitter simple-fourchan dm-core dm-aggregates dm-migrations dm-sqlite-adapter timers json yaml isaac nokogiri
+
+settings.yml:
+
+greetings:
+  badChance: 5
+  bad:
+    - "go away"
+  goodChance: 10
+  good:
+    - "hi"
+  goodPeople:
+    - "user1"
+    - "user2"
+
+config.yml:
+
+config:
+  server: irc.freenode.net
+  port	: 8001
+  realname: botname
+  nick	: botnick
+  default_channel: "#mychannel"
+  default_admin	: "user1"
+  nickserv_password: "secret"
+
+commands:
+  ping: "pong"
+
+twitter.yml:
+
+config:
+  consumer_key: "consumerkey"
+  consumer_secret: "consumer_secret"
+>>>>>>> a54c101be78de57caaf98393ffe824401fcdbb0b
