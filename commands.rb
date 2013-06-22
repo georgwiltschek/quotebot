@@ -18,43 +18,51 @@ class Commands < Array
     # self.push cmd
     $fcBuffer = FourchanBuffer.new
     
+    #bibelsuche
+    cmd = Command.new
+    cmd.help = "!heilige <string>           -- posts a random bible quote about <string>"
+    cmd.regex = /^\!heilige (.*?)$/
+    cmd.cmd = Proc.new do |q|
+      q = URI::encode(q)
+      q = q.gsub(" ", "%20")
+      url = "http://bibel-online.net/suche/?qs=#{q}&translation=6"
+      doc = Nokogiri::HTML(open(url))
+      quotes =  doc.css('p').to_a
+
+      if(quotes.length == 0)
+        msg channel, "nichts gefunden :("
+        return
+      end
+
+      quote = quotes.choice # sample
+
+      quote = quote.text.split("\n").to_a
+      quote.delete_at(1)
+      quote.delete_at(0)
+
+      ret = quote.join(" ").gsub("\t","")
+
+      msg channel, "#{ret}"
+    end
+    self.push cmd
+
+
     #w titter search
     cmd = Command.new
     cmd.help = "!smoke <string>           -- posts a random tweet about <string>"
     cmd.regex = /^\!smoke (.*?)$/
     cmd.cmd = Proc.new do |hashtag|
-<<<<<<< HEAD
       hashtag = URI::encode(hashtag)
-      response = Net::HTTP.get_response("search.twitter.com","/search.json?q="+hashtag.gsub(" ", "%20"))
+      hashtag = hashtag.gsub(" ", "%20")
+    	
+    	response = Twitter.search(hashtag, :count => 15).results
 
-      if (response.body == nil) then
-    	  return
-      end
-
-      tweet = JSON.parse(response.body)
-      if tweet['error']
-      	return
-      end
-        
-      if tweet['results'].size == 0 then
-        msg channel, "nichts gefunden :("
-        return
-      end
-
-      rtweet = tweet['results'].choice # .sample for ruby >= 1.9.1
-=======
-    hashtag = URI::encode(hashtag)
-    hashtag = hashtag.gsub(" ", "%20")
-	
-	response = Twitter.search(hashtag, :count => 15).results
-
-	if(response.length == 0)
-        msg channel, "nichts gefunden :("
-		return
-	end
-        
+    	if(response.length == 0)
+            msg channel, "nichts gefunden :("
+    		return
+    	end
+            
       rtweet = response.choice # .sample for ruby >= 1.9.1
->>>>>>> a54c101be78de57caaf98393ffe824401fcdbb0b
       msg channel, "#{rtweet['from_user']}: #{rtweet['text']}"
     end
     self.push cmd
@@ -346,8 +354,4 @@ class Commands < Array
   
 
   
-<<<<<<< HEAD
 end
-=======
-end
->>>>>>> a54c101be78de57caaf98393ffe824401fcdbb0b
